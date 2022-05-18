@@ -85,7 +85,14 @@ public class TwitterJ {
      */
     public void splitIntoWords()
     {
-
+        for (int i = 0; i < statuses.size(); i++) {
+            while(statuses.get(i) != null){
+                String[] split = statuses.get(i).getText().split(",");
+                for (int j = 0; j < split.length; i++) {
+                    terms.add(split[i]);
+                }
+            }
+        }
     }
 
     /*
@@ -97,7 +104,8 @@ public class TwitterJ {
      */
     private String removePunctuation( String s )
     {
-        return null;
+        s.replaceAll("[`~!@#$%^&*()_\\-+={\\[}\\]|\\\\\"': ;>.<,?/]","");
+        return s;
 
     }
 
