@@ -167,7 +167,27 @@ public class TwitterJ {
     @SuppressWarnings("unchecked")
     public String mostPopularWord()
     {
-        return null;
+        ArrayList<String> words = new ArrayList<>();
+        ArrayList<Integer> frequency = new ArrayList<Integer>();
+
+        for(int i = 0; i < terms.size(); i++) {
+            if(!words.contains(terms.get(i))){
+                words.add(terms.get(i));
+                frequency.set(words.indexOf(terms.get(i)), 1);
+            }else {
+                frequency.set(words.indexOf(terms.get(i)), frequency.get(words.indexOf(terms.get(i))) + 1);
+            }
+        }
+
+        int max = -1;
+        for(int i = 0; i < frequency.size(); i++) {
+            if(frequency.get(i) > max){
+                max = frequency.get(i);
+            }
+        }
+
+        popularWord = words.get(max);
+        return popularWord;
     }
 
     /*
@@ -177,7 +197,27 @@ public class TwitterJ {
      */
     public int getFrequencyMax()
     {
-        return 0;
+        ArrayList<String> words = new ArrayList<>();
+        ArrayList<Integer> frequency = new ArrayList<Integer>();
+
+        for(int i = 0; i < terms.size(); i++) {
+            if(!words.contains(terms.get(i))){
+                words.add(terms.get(i));
+                frequency.set(words.indexOf(terms.get(i)), 1);
+            }else {
+                frequency.set(words.indexOf(terms.get(i)), frequency.get(words.indexOf(terms.get(i))) + 1);
+            }
+        }
+
+        int max = -1;
+        for(int i = 0; i < frequency.size(); i++) {
+            if(frequency.get(i) > max){
+                max = frequency.get(i);
+            }
+        }
+
+        frequencyMax = max;
+        return frequencyMax;
     }
 
 
