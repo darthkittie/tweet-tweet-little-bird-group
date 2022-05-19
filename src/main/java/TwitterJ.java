@@ -150,6 +150,12 @@ public class TwitterJ {
             terms.set(i, terms.get(minValue));
             terms.set(minValue, temp);
         }
+        for(int i = 0; i < terms.size()-1 ; i++) {
+            if(terms.get(i).equals(" ")){
+                terms.remove(i);
+                i--;
+            }
+        }
     }
 
     /*
