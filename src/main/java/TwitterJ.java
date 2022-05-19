@@ -141,8 +141,15 @@ public class TwitterJ {
     @SuppressWarnings("unchecked")
     public void sortAndRemoveEmpties()
     {
-
-
+        for(int i = 0; i < terms.size()-1 ; i++) {
+            int minValue = i;
+            for(int j = i + 1; j < terms.size(); j++) {
+                if (terms.get(j).compareTo(terms.get(minValue)) < 0) minValue = j;
+            }
+            String temp = terms.get(i);
+            terms.set(i, terms.get(minValue));
+            terms.set(minValue, temp);
+        }
     }
 
     /*
