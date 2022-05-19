@@ -118,8 +118,19 @@ public class TwitterJ {
     @SuppressWarnings("unchecked")
     private void removeCommonEnglishWords()
     {
-
-
+        try(FileReader fr = new FileReader("commonWords.txt");
+            BufferedReader br = new BufferedReader(fr))
+        {
+            for(int i = 0; i < terms.size(); i++) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if(terms.get(i).equals(line)) {
+                        terms.remove(i);
+                        i--;
+                    }
+                }
+            }
+        }catch (IOException e){e.printStackTrace();}
     }
 
     /*
