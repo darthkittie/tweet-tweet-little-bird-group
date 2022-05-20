@@ -34,7 +34,6 @@ public class TwitterJ {
         twitter.updateStatus(message);
     }
 
-
     /*  Part 2 */
     /*
      * This method queries the tweets of a particular user's handle.
@@ -85,15 +84,15 @@ public class TwitterJ {
      */
     public void splitIntoWords()
     {
-        for (int i = 0; i < statuses.size(); i++) {
-            while(statuses.get(i) != null){
-                String[] split = statuses.get(i).getText().split(",");
-                for (int j = 0; j < split.length; i++) {
-                    terms.add(split[i]);
-                }
-            }
-        }
-    }
+        for (int i = 0; i < statuses.size(); i++) { // loop through statuses
+            String[] split = statuses.get(i).getText().split(" ");
+            for (int j = 0; j < split.length; j++) { // through individual words in statuses
+                String word = split[j];
+                word = removePunctuation(split[j]); // need remove punctuation here, as not called in runner.
+                terms.add(word);
+            }// end of split for-loop
+        }// end of statuses for-loop
+    }// end of splitIntoWords method
 
     /*
      * This method removes common punctuation from each individual word.
@@ -104,10 +103,9 @@ public class TwitterJ {
      */
     private String removePunctuation( String s )
     {
-        s.replaceAll("[`~!@#$%^&*()_\\-+={\\[}\\]|\\\\\"': ;>.<,?/]","");
+        s = s.replaceAll("[^A-Za-z0-9]", ""); // regex removes all elements that are not alphanumeric characters
         return s;
-
-    }
+    }// end of removePunctuation method
 
     /*
      * This method removes common English words from the list of terms.
@@ -116,22 +114,20 @@ public class TwitterJ {
      * This method should NOT throw an exception.  Use try/catch.
      */
     @SuppressWarnings("unchecked")
-    private void removeCommonEnglishWords()
+    private void removeCommonEnglishWords() throws FileNotFoundException
     {
-        try(FileReader fr = new FileReader("commonWords.txt");
-            BufferedReader br = new BufferedReader(fr))
-        {
-            for(int i = 0; i < terms.size(); i++) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    if(terms.get(i).equals(line)) {
-                        terms.remove(i);
-                        i--;
-                    }
-                }
-            }
-        }catch (IOException e){e.printStackTrace();}
-    }
+        File file = new File("commonWords.txt");
+        Scanner fromFile = new Scanner(file);
+        while (fromFile.hasNextLine()) { // while the next line is not empty
+            String currentCommonWord = fromFile.nextLine();
+            for(int i = 0; i < terms.size(); i++) { // loop through terms
+                if(terms.get(i).equalsIgnoreCase(currentCommonWord)) {
+                    terms.remove(i);
+                    i--;
+                }// remove term if common word
+            }// end of terms for-loop
+        }// end of while-loop - finished reading text file
+    }// end of removeCommonEnglishWords method
 
     /*
      * This method sorts the words in terms in alphabetically (and lexicographic) order.
@@ -141,22 +137,22 @@ public class TwitterJ {
     @SuppressWarnings("unchecked")
     public void sortAndRemoveEmpties()
     {
-        for(int i = 0; i < terms.size()-1 ; i++) {
+        for(int i = 0; i < terms.size()-1 ; i++) { // selection sort through terms
             int minValue = i;
-            for(int j = i + 1; j < terms.size(); j++) {
-                if (terms.get(j).compareTo(terms.get(minValue)) < 0) minValue = j;
-            }
+            for(int j = i + 1; j < terms.size(); j++) { // loop through terms
+                if (terms.get(j).compareToIgnoreCase(terms.get(minValue)) < 0) minValue = j;
+            }// end of terms for-loop
             String temp = terms.get(i);
             terms.set(i, terms.get(minValue));
             terms.set(minValue, temp);
-        }
-        for(int i = 0; i < terms.size()-1 ; i++) {
-            if(terms.get(i).equals(" ")){
+        }// end of selection sort
+        for(int i = 0; i < terms.size()-1 ; i++) { // loop through terms
+            if(terms.get(i).equals("") || terms.get(i).equals(" ")){
                 terms.remove(i);
                 i--;
-            }
-        }
-    }
+            }// remove if term is empty
+        }// end of terms for-loop
+    }// end of sortAndRemoveEmpties method
 
     /*
      * This method returns the most common word from terms.
@@ -169,26 +165,30 @@ public class TwitterJ {
     {
         ArrayList<String> words = new ArrayList<>();
         ArrayList<Integer> frequency = new ArrayList<Integer>();
-
-        for(int i = 0; i < terms.size(); i++) {
-            if(!words.contains(terms.get(i))){
-                words.add(terms.get(i));
-                frequency.set(words.indexOf(terms.get(i)), 1);
-            }else {
-                frequency.set(words.indexOf(terms.get(i)), frequency.get(words.indexOf(terms.get(i))) + 1);
-            }
-        }
-
-        int max = -1;
-        for(int i = 0; i < frequency.size(); i++) {
+        for(int i = 0; i < terms.size(); i++) { // loop through terms
+            while(!words.contains(terms.get(i).toLowerCase())) { // check if words list contains terms from terms list (caps are ignored)
+                words.add(terms.get(i).toLowerCase());
+            }// end of conditional while
+        }// end of terms for loop - should result in no duplicates
+        for (int i = 0; i < words.size(); i++) { // loop through words
+            frequency.add(0); // avoids index ut of bounds
+            for (int j = 0; j < terms.size(); j++) { // loop through terms
+                if(words.get(i).equalsIgnoreCase(terms.get(j))){
+                    frequency.set(i, frequency.get(i) + 1);
+                }// adds 1 if word in list
+            }// end of terms for-loop
+        }// end of words for-loop
+        int max = -1; // max set to impossible number
+        int maxIndex = 0;
+        for(int i = 0; i < frequency.size(); i++) { // loop through frequency
             if(frequency.get(i) > max){
                 max = frequency.get(i);
-            }
-        }
-
-        popularWord = words.get(max);
+                maxIndex = i;
+            }// returns maxIndex
+        }// end of frequency for-loop
+        popularWord = words.get(maxIndex);// gets word at max index
         return popularWord;
-    }
+    }// end of mostPopularWord method
 
     /*
      * This method returns the number of times the most common word appears.
@@ -199,27 +199,30 @@ public class TwitterJ {
     {
         ArrayList<String> words = new ArrayList<>();
         ArrayList<Integer> frequency = new ArrayList<Integer>();
-
-        for(int i = 0; i < terms.size(); i++) {
-            if(!words.contains(terms.get(i))){
-                words.add(terms.get(i));
-                frequency.set(words.indexOf(terms.get(i)), 1);
-            }else {
-                frequency.set(words.indexOf(terms.get(i)), frequency.get(words.indexOf(terms.get(i))) + 1);
-            }
-        }
-
-        int max = -1;
-        for(int i = 0; i < frequency.size(); i++) {
+        for(int i = 0; i < terms.size(); i++) { // loop through terms
+            while(!words.contains(terms.get(i).toLowerCase())) { // check if words list contains terms from terms list (caps are ignored)
+                words.add(terms.get(i).toLowerCase());
+            }// end of conditional while
+        }// end of terms for loop - should result in no duplicates
+        for (int i = 0; i < words.size(); i++) { // loop through words
+            frequency.add(0); // avoids index ut of bounds
+            for (int j = 0; j < terms.size(); j++) { // loop through terms
+                if(words.get(i).equalsIgnoreCase(terms.get(j))){
+                    frequency.set(i, frequency.get(i) + 1);
+                }// adds 1 if word in list
+            }// end of terms for-loop
+        }// end of words for-loop
+        int max = -1; // max set to impossible number
+        int maxIndex = 0;
+        for(int i = 0; i < frequency.size(); i++) { // loop through frequency
             if(frequency.get(i) > max){
                 max = frequency.get(i);
-            }
-        }
-
-        frequencyMax = max;
+                maxIndex = i;
+            }// returns maxIndex
+        }// end of frequency for-loop
+        frequencyMax = frequency.get(maxIndex);
         return frequencyMax;
-    }
-
+    }// end of getFrequencyMax method
 
     /*  Part 3 */
     public void investigate ()
