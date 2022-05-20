@@ -1,4 +1,5 @@
 
+import org.javacord.api.*;
 import twitter4j.*;
 import java.util.List;
 import java.io.*;
@@ -114,19 +115,20 @@ public class TwitterJ {
      * This method should NOT throw an exception.  Use try/catch.
      */
     @SuppressWarnings("unchecked")
-    private void removeCommonEnglishWords() throws FileNotFoundException
-    {
-        File file = new File("commonWords.txt");
-        Scanner fromFile = new Scanner(file);
-        while (fromFile.hasNextLine()) { // while the next line is not empty
-            String currentCommonWord = fromFile.nextLine();
-            for(int i = 0; i < terms.size(); i++) { // loop through terms
-                if(terms.get(i).equalsIgnoreCase(currentCommonWord)) {
-                    terms.remove(i);
-                    i--;
-                }// remove term if common word
-            }// end of terms for-loop
-        }// end of while-loop - finished reading text file
+    private void removeCommonEnglishWords() {
+        try {
+            File file = new File("commonWords.txt");
+            Scanner fromFile = new Scanner(file);
+            while (fromFile.hasNextLine()) { // while the next line is not empty
+                String currentCommonWord = fromFile.nextLine();
+                for (int i = 0; i < terms.size(); i++) { // loop through terms
+                    if (terms.get(i).equalsIgnoreCase(currentCommonWord)) {
+                        terms.remove(i);
+                        i--;
+                    }// remove term if common word
+                }// end of terms for-loop
+            }// end of while-loop - finished reading text file
+        }catch (FileNotFoundException e) {e.printStackTrace();}
     }// end of removeCommonEnglishWords method
 
     /*
@@ -227,7 +229,8 @@ public class TwitterJ {
     /*  Part 3 */
     public void investigate ()
     {
-        //Enter your code here
+        DiscordApi api = new DiscordApiBuilder().setToken("<token>").login().join();
+
     }
 
     /*
