@@ -1,6 +1,10 @@
 
 import org.javacord.api.*;
+import org.javacord.api.entity.message.MessageBuilder;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
 import twitter4j.*;
+
+import java.awt.*;
 import java.util.List;
 import java.io.*;
 import java.util.ArrayList;
@@ -229,7 +233,105 @@ public class TwitterJ {
     /*  Part 3 */
     public void investigate ()
     {
-        DiscordApi api = new DiscordApiBuilder().setToken("<token>").login().join();
+        DiscordApi api = new DiscordApiBuilder().setToken("OTc1NTI4NDI5NjE1MjAyNDA0.GpnlEk.CYmO4QJZ6ZdqAHdFCM4mjG8T02DzaDPD0jvEXY").login().join();
+        api.addMessageCreateListener(follow -> {
+            String userMessage = follow.getMessageContent();
+            String usersString = "";
+            if (userMessage.substring(0,7).equals("!follow")) {
+                usersString = userMessage.substring(7);
+            }
+            usersString = usersString.replaceAll("[^A-Za-z0-9_,]", "");
+            String[] users = usersString.split("[,]");
+            ArrayList<String> cleanList = new ArrayList<>();
+            for (int i = 0; i < users.length; i++) {
+                if(users[i].length() > 4 && users[i].length() < 15) {
+                    cleanList.add(users[i]);
+                }
+            }
+            try {
+                FileWriter fileWriter = new FileWriter("followersList.txt");
+                BufferedWriter writer = new BufferedWriter(fileWriter);
+                for(int i = 0; i < cleanList.size(); i++) {
+                    writer.write(users[i]);
+                    if(i != users.length-1) {
+                        writer.write("\n");
+                    }
+                    writer.flush();
+                }
+                follow.getChannel().sendMessage("DONE!");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }// try catch for writing into file
+        });
+        api.addMessageCreateListener(listFollowers -> {
+            String userMessage = listFollowers.getMessageContent();
+            String usersString = "";
+            if (userMessage.equals("!showf")) {
+                try {
+                    File file = new File("followersList.txt");
+                    Scanner fromFile = new Scanner(file);
+                    String output = "";
+                    while (fromFile.hasNextLine()) { // while the next line is not empty
+                        String currentUser = fromFile.nextLine();
+                        output += currentUser;
+                        if(fromFile.hasNextLine()) {
+                            output += ", ";
+                        }
+                    }// end of while-loop - finished reading text file
+                    listFollowers.getChannel().sendMessage(output);
+                }catch (FileNotFoundException e) {e.printStackTrace();}
+                ArrayList<String> users = new ArrayList<>();
+                ArrayList<Status> statusList = new ArrayList<>();
+                try {
+                    File file = new File("followersList.txt");
+                    Scanner fromFile = new Scanner(file);
+                    while (fromFile.hasNextLine()) { // while the next line is not empty
+                        users.add(fromFile.nextLine());
+                    }// end of while-loop - finished reading text file
+                    for (int i = 0; i < users.size(); i++) {
+                        Status status = twitter.showStatus(Long.parseLong(users.get(i)));
+                        statusList.add(status);
+                    }
+                    for (int i = 0; i < statusList.size(); i++) {
+                        System.out.println("hello");
+                        System.out.println(statusList.get(i).getUser().getScreenName() + " said: " + statusList.get(i).getText());
+                        listFollowers.getChannel().sendMessage(statusList.get(i).getUser().getScreenName() + " said: " + statusList.get(i).getText());
+//                        new MessageBuilder().setEmbed(new EmbedBuilder()
+//                                .setTitle(statusList.get(i).getUser().getScreenName() + " said: ")
+//                                .setDescription(statusList.get(i).getText())
+//                                .setColor(Color.ORANGE))
+//                                .send(showLatestTweets.getChannel());;
+                    }
+                }catch (FileNotFoundException | TwitterException e) {e.printStackTrace();}
+            }
+
+        });
+        api.addMessageCreateListener(showLatestTweets -> {
+            if(showLatestTweets.getMessageContent().equals("!showtwt")) {
+                /*ArrayList<String> users = new ArrayList<>();
+                ArrayList<Status> statusList = new ArrayList<>();
+                try {
+                    File file = new File("followersList.txt");
+                    Scanner fromFile = new Scanner(file);
+                    while (fromFile.hasNextLine()) { // while the next line is not empty
+                        users.add(fromFile.nextLine());                        
+                    }// end of while-loop - finished reading text file
+                    for (int i = 0; i < users.size(); i++) {
+                        Status status = twitter.showStatus(Long.parseLong(users.get(i)));
+                        statusList.add(status);
+                    }
+                    for (int i = 0; i < statusList.size(); i++) {
+                        System.out.println(statusList.get(i).getUser().getScreenName() + " said: " + statusList.get(i).getText());
+                        showLatestTweets.getChannel().sendMessage(statusList.get(i).getUser().getScreenName() + " said: " + statusList.get(i).getText());
+//                        new MessageBuilder().setEmbed(new EmbedBuilder()
+//                                .setTitle(statusList.get(i).getUser().getScreenName() + " said: ")
+//                                .setDescription(statusList.get(i).getText())
+//                                .setColor(Color.ORANGE))
+//                                .send(showLatestTweets.getChannel());;
+                    }
+                }catch (FileNotFoundException | TwitterException e) {e.printStackTrace();}*/
+            }
+        });
 
     }
 
@@ -255,4 +357,4 @@ public class TwitterJ {
         }
         System.out.println();
     }
-}
+}// end of TwitterJ class
