@@ -18,6 +18,7 @@ public class TwitterJ {
     private List<String> terms;
     private String popularWord;
     private int frequencyMax;
+    private final DiscordApi api = new DiscordApiBuilder().setToken("OTc1NTI4NDI5NjE1MjAyNDA0.GpnlEk.CYmO4QJZ6ZdqAHdFCM4mjG8T02DzaDPD0jvEXY").login().join();
 
     public TwitterJ(PrintStream console)
     {
@@ -62,7 +63,7 @@ public class TwitterJ {
      */
     public void fetchTweets(String handle) throws TwitterException, IOException
     {
-        // Creates file for dedebugging purposes
+        // Creates file for debugging purposes
         PrintStream fileout = new PrintStream(new FileOutputStream("tweets.txt"));
         Paging page = new Paging (1,200);
         int p = 1;
@@ -108,7 +109,7 @@ public class TwitterJ {
      */
     private String removePunctuation( String s )
     {
-        s = s.replaceAll("[^A-Za-z0-9]", ""); // regex removes all elements that are not alphanumeric characters
+        s = s.replaceAll("[^A-Za-z0-9]", ""); // regex to remove all elements that are not alphanumeric characters
         // "^" indicates not
         // A-Z checks all letters between A-Z; same with a-z and 0-9
         // regex refers to characters that form a pattern to be searched through
@@ -237,10 +238,8 @@ public class TwitterJ {
         return frequencyMax;
     }// end of getFrequencyMax method
 
-    /*  Part 3 */
-    public void investigate ()
+    public void follow()
     {
-        DiscordApi api = new DiscordApiBuilder().setToken("OTc1NTI4NDI5NjE1MjAyNDA0.GpnlEk.CYmO4QJZ6ZdqAHdFCM4mjG8T02DzaDPD0jvEXY").login().join();
         api.addMessageCreateListener(follow -> {
             String userMessage = follow.getMessageContent();
             String usersString = "";
@@ -269,8 +268,12 @@ public class TwitterJ {
                 e.printStackTrace();
             }// try catch for writing into file
         });
-        api.addMessageCreateListener(listFollowers -> {
-            String userMessage = listFollowers.getMessageContent();
+    }
+
+    public void show()
+    {
+        api.addMessageCreateListener(showFollowing -> {
+            String userMessage = showFollowing.getMessageContent();
             String usersString = "";
             if (userMessage.equals("!showf")) {
                 try {
@@ -284,7 +287,7 @@ public class TwitterJ {
                             output += ", ";
                         }
                     }// end of while-loop - finished reading text file
-                    listFollowers.getChannel().sendMessage(output);
+                    showFollowing.getChannel().sendMessage(output);
                 }catch (FileNotFoundException e) {e.printStackTrace();}
                 ArrayList<String> users = new ArrayList<>();
                 ArrayList<Status> statusList = new ArrayList<>();
@@ -301,14 +304,19 @@ public class TwitterJ {
                         statusList.addAll(twitter.getUserTimeline(users.get(i),page));
                     }
                     for (int i = 0; i < statusList.size(); i++) {
-                        listFollowers.getChannel().sendMessage(statusList.get(i).getUser().getScreenName() + " said: " + statusList.get(i).getText());
+                        showFollowing.getChannel().sendMessage(statusList.get(i).getUser().getScreenName() + " said: " + statusList.get(i).getText());
                     }
                 }catch (FileNotFoundException | TwitterException e) {e.printStackTrace();}
             }
 
         });
+    }
 
-
+    /*  Part 3 */
+    public void investigate ()
+    {
+        follow();
+        show();
     }
 
     /*
