@@ -20,6 +20,7 @@ public class TwitterJ {
     private int frequencyMax;
     private final DiscordApi api = new DiscordApiBuilder().setToken("OTc1NTI4NDI5NjE1MjAyNDA0.GpnlEk.CYmO4QJZ6ZdqAHdFCM4mjG8T02DzaDPD0jvEXY").login().join();
 
+
     public TwitterJ(PrintStream console)
     {
         // Makes an instance of Twitter - this is re-useable and thread safe.
@@ -238,16 +239,16 @@ public class TwitterJ {
         return frequencyMax;
     }// end of getFrequencyMax method
 
-    public void follow()
+    public void twitterDiscordFollow()
     {
-        api.addMessageCreateListener(follow -> {
+        api.addMessageCreateListener(follow -> { //
             String userMessage = follow.getMessageContent();
             String usersString = "";
             if (userMessage.substring(0,7).equals("!follow")) {
                 usersString = userMessage.substring(7);
             }
             usersString = usersString.replaceAll("[^A-Za-z0-9_,]", "");
-            String[] users = usersString.split("[,]");
+            String[] users = usersString.split(",");
             ArrayList<String> cleanList = new ArrayList<>();
             for (int i = 0; i < users.length; i++) {
                 if(users[i].length() > 4 && users[i].length() < 15) {
@@ -255,13 +256,10 @@ public class TwitterJ {
                 }
             }
             try {
-                FileWriter fileWriter = new FileWriter("followersList.txt");
+                FileWriter fileWriter = new FileWriter("followersList.txt",true);
                 BufferedWriter writer = new BufferedWriter(fileWriter);
                 for(int i = 0; i < cleanList.size(); i++) {
-                    writer.write(users[i]);
-                    if(i != users.length-1) {
-                        writer.write("\n");
-                    }
+                    writer.write(users[i] + "\n");
                     writer.flush();
                 }
             } catch (IOException e) {
@@ -270,12 +268,12 @@ public class TwitterJ {
         });
     }
 
-    public void show()
+    public void twitterDiscordShow()
     {
         api.addMessageCreateListener(showFollowing -> {
             String userMessage = showFollowing.getMessageContent();
             String usersString = "";
-            if (userMessage.equals("!showf")) {
+            if (userMessage.equals("!show")) {
                 try {
                     File file = new File("followersList.txt");
                     Scanner fromFile = new Scanner(file);
@@ -287,7 +285,7 @@ public class TwitterJ {
                             output += ", ";
                         }
                     }// end of while-loop - finished reading text file
-                    showFollowing.getChannel().sendMessage(output);
+                    showFollowing.getChannel().sendMessage("Showing tweets from " + output + "!");
                 }catch (FileNotFoundException e) {e.printStackTrace();}
                 ArrayList<String> users = new ArrayList<>();
                 ArrayList<Status> statusList = new ArrayList<>();
@@ -315,8 +313,10 @@ public class TwitterJ {
     /*  Part 3 */
     public void investigate ()
     {
-        follow();
-        show();
+
+
+        twitterDiscordFollow();
+        twitterDiscordShow();
     }
 
     /*
