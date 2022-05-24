@@ -109,6 +109,13 @@ public class TwitterJ {
     private String removePunctuation( String s )
     {
         s = s.replaceAll("[^A-Za-z0-9]", ""); // regex removes all elements that are not alphanumeric characters
+        // "^" indicates not
+        // A-Z checks all letters between A-Z; same with a-z and 0-9
+        // regex refers to characters that form a pattern to be searched through
+        // When using ^ and our characters, we tell the regex to search for all characters that are not our characters
+        // The brackets indicate to search through each letter individually rather than with a pattern.
+        //  -> "[!@]" searches through ! and @ separately while "!@" searches for patterns of "!@" (contains)
+        // Replace through searches for the regex and replaces it with the string provided ("")
         return s;
     }// end of removePunctuation method
 
@@ -258,7 +265,6 @@ public class TwitterJ {
                     }
                     writer.flush();
                 }
-                follow.getChannel().sendMessage("DONE!");
             } catch (IOException e) {
                 e.printStackTrace();
             }// try catch for writing into file
@@ -289,49 +295,19 @@ public class TwitterJ {
                         users.add(fromFile.nextLine());
                     }// end of while-loop - finished reading text file
                     for (int i = 0; i < users.size(); i++) {
-                        Status status = twitter.showStatus(Long.parseLong(users.get(i)));
-                        statusList.add(status);
+                        PrintStream fileout = new PrintStream(new FileOutputStream("tweets.txt"));
+                        Paging page = new Paging (1,1);
+                        page.setPage(1);
+                        statusList.addAll(twitter.getUserTimeline(users.get(i),page));
                     }
                     for (int i = 0; i < statusList.size(); i++) {
-                        System.out.println("hello");
-                        System.out.println(statusList.get(i).getUser().getScreenName() + " said: " + statusList.get(i).getText());
                         listFollowers.getChannel().sendMessage(statusList.get(i).getUser().getScreenName() + " said: " + statusList.get(i).getText());
-//                        new MessageBuilder().setEmbed(new EmbedBuilder()
-//                                .setTitle(statusList.get(i).getUser().getScreenName() + " said: ")
-//                                .setDescription(statusList.get(i).getText())
-//                                .setColor(Color.ORANGE))
-//                                .send(showLatestTweets.getChannel());;
                     }
                 }catch (FileNotFoundException | TwitterException e) {e.printStackTrace();}
             }
 
         });
-        api.addMessageCreateListener(showLatestTweets -> {
-            if(showLatestTweets.getMessageContent().equals("!showtwt")) {
-                /*ArrayList<String> users = new ArrayList<>();
-                ArrayList<Status> statusList = new ArrayList<>();
-                try {
-                    File file = new File("followersList.txt");
-                    Scanner fromFile = new Scanner(file);
-                    while (fromFile.hasNextLine()) { // while the next line is not empty
-                        users.add(fromFile.nextLine());                        
-                    }// end of while-loop - finished reading text file
-                    for (int i = 0; i < users.size(); i++) {
-                        Status status = twitter.showStatus(Long.parseLong(users.get(i)));
-                        statusList.add(status);
-                    }
-                    for (int i = 0; i < statusList.size(); i++) {
-                        System.out.println(statusList.get(i).getUser().getScreenName() + " said: " + statusList.get(i).getText());
-                        showLatestTweets.getChannel().sendMessage(statusList.get(i).getUser().getScreenName() + " said: " + statusList.get(i).getText());
-//                        new MessageBuilder().setEmbed(new EmbedBuilder()
-//                                .setTitle(statusList.get(i).getUser().getScreenName() + " said: ")
-//                                .setDescription(statusList.get(i).getText())
-//                                .setColor(Color.ORANGE))
-//                                .send(showLatestTweets.getChannel());;
-                    }
-                }catch (FileNotFoundException | TwitterException e) {e.printStackTrace();}*/
-            }
-        });
+
 
     }
 
