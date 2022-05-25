@@ -1,6 +1,9 @@
-
 import org.javacord.api.*;
+import org.javacord.api.entity.message.MessageBuilder;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
 import twitter4j.*;
+
+import java.awt.*;
 import java.util.List;
 import java.io.*;
 import java.util.ArrayList;
@@ -13,7 +16,7 @@ public class TwitterJ {
     private List<String> terms;
     private String popularWord;
     private int frequencyMax;
-    private final DiscordApi api = new DiscordApiBuilder().setToken("<TOKEN>").login().join();
+    private final DiscordApi api = new DiscordApiBuilder().setToken("OTc4NzcxMTU4NTk1OTYwODMy.GYbDpf.e5hdiR0sBvef08x7_frcwRVaN_0dFZiYV_O-K4").login().join();
 
 
     public TwitterJ(PrintStream console)
@@ -333,7 +336,11 @@ public class TwitterJ {
                         }
                     }// end of while-loop - finished reading text file
 
-                    showFollowing.getChannel().sendMessage("Showing latest tweets & replies from " + output + "!");
+                    if(!(output.equals("") || output.equals(" "))) {
+                        showFollowing.getChannel().sendMessage("Showing latest tweets/replies from " + output + "!");
+                    }else {
+                        showFollowing.getChannel().sendMessage("You are not following anyone yet :(");
+                    }
                 }catch (FileNotFoundException e) {e.printStackTrace();}
 
                 ArrayList<String> users = new ArrayList<>();
@@ -354,7 +361,14 @@ public class TwitterJ {
                     }
 
                     for (int i = 0; i < statusList.size(); i++) {
-                        showFollowing.getChannel().sendMessage(statusList.get(i).getUser().getScreenName() + " said: " + statusList.get(i).getText());
+                        /*---------------------------------------------------------------------------------------*/
+                        new MessageBuilder()
+                                .setEmbed(new EmbedBuilder()
+                                        .setTitle(statusList.get(i).getUser().getScreenName() + " said: ")
+                                        .setDescription(statusList.get(i).getText())
+                                        .setColor(Color.BLUE))
+                                .send(showFollowing.getChannel());
+                        /*---------------------------------------------------------------------------------------*/
                     }
 
                 }catch (FileNotFoundException | TwitterException e) {e.printStackTrace();}
@@ -398,6 +412,7 @@ public class TwitterJ {
                         if (users.get(i).equals(cleanList.get(j))) {
                             users.remove(i);
                             i--;
+                            remove.getChannel().sendMessage("Successfully removed " + users.get(i) + "!");
                         }
                     }
                 }
