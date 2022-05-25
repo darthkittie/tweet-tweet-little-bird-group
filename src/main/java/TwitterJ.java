@@ -1,15 +1,10 @@
 
 import org.javacord.api.*;
-import org.javacord.api.entity.message.MessageBuilder;
-import org.javacord.api.entity.message.embed.EmbedBuilder;
 import twitter4j.*;
-
-import java.awt.*;
 import java.util.List;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Date;
 
 public class TwitterJ {
     private Twitter twitter;
@@ -18,7 +13,7 @@ public class TwitterJ {
     private List<String> terms;
     private String popularWord;
     private int frequencyMax;
-    private final DiscordApi api = new DiscordApiBuilder().setToken("OTc1NTI4NDI5NjE1MjAyNDA0.GpnlEk.CYmO4QJZ6ZdqAHdFCM4mjG8T02DzaDPD0jvEXY").login().join();
+    private final DiscordApi api = new DiscordApiBuilder().setToken("OTc4NzcxMTU4NTk1OTYwODMy.GtyMO-.vmOsyEebmcz4d20bFvHlECV93ur2FI7KuH2vnw").login().join();
 
 
     public TwitterJ(PrintStream console)
@@ -93,11 +88,12 @@ public class TwitterJ {
     {
         for (int i = 0; i < statuses.size(); i++) { // loop through statuses
             String[] split = statuses.get(i).getText().split(" ");
+
             for (int j = 0; j < split.length; j++) { // through individual words in statuses
-                String word = split[j];
-                word = removePunctuation(split[j]); // need remove punctuation here, as not called in runner.
+                String word = removePunctuation(split[j]); // need remove punctuation here, as not called in runner.
                 terms.add(word);
             }// end of split for-loop
+
         }// end of statuses for-loop
     }// end of splitIntoWords method
 
@@ -132,15 +128,19 @@ public class TwitterJ {
         try {
             File file = new File("commonWords.txt");
             Scanner fromFile = new Scanner(file);
+
             while (fromFile.hasNextLine()) { // while the next line is not empty
                 String currentCommonWord = fromFile.nextLine();
+
                 for (int i = 0; i < terms.size(); i++) { // loop through terms
                     if (terms.get(i).equalsIgnoreCase(currentCommonWord)) {
                         terms.remove(i);
                         i--;
                     }// remove term if common word
                 }// end of terms for-loop
+
             }// end of while-loop - finished reading text file
+
         }catch (FileNotFoundException e) {e.printStackTrace();}
     }// end of removeCommonEnglishWords method
 
@@ -153,20 +153,24 @@ public class TwitterJ {
     public void sortAndRemoveEmpties()
     {
         for(int i = 0; i < terms.size()-1 ; i++) { // selection sort through terms
-            int minValue = i;
+            int minIndex = i;
+
             for(int j = i + 1; j < terms.size(); j++) { // loop through terms
-                if (terms.get(j).compareToIgnoreCase(terms.get(minValue)) < 0) minValue = j;
+                if (terms.get(j).compareToIgnoreCase(terms.get(minIndex)) < 0) minIndex = j;
             }// end of terms for-loop
+
             String temp = terms.get(i);
-            terms.set(i, terms.get(minValue));
-            terms.set(minValue, temp);
+            terms.set(i, terms.get(minIndex));
+            terms.set(minIndex, temp);
         }// end of selection sort
+
         for(int i = 0; i < terms.size()-1 ; i++) { // loop through terms
             if(terms.get(i).equals("") || terms.get(i).equals(" ")){
                 terms.remove(i);
                 i--;
             }// remove if term is empty
         }// end of terms for-loop
+
     }// end of sortAndRemoveEmpties method
 
     /*
@@ -179,28 +183,35 @@ public class TwitterJ {
     public String mostPopularWord()
     {
         ArrayList<String> words = new ArrayList<>();
-        ArrayList<Integer> frequency = new ArrayList<Integer>();
+        ArrayList<Integer> frequency = new ArrayList<>();
+
         for(int i = 0; i < terms.size(); i++) { // loop through terms
             while(!words.contains(terms.get(i).toLowerCase())) { // check if words list contains terms from terms list (caps are ignored)
                 words.add(terms.get(i).toLowerCase());
             }// end of conditional while
         }// end of terms for loop - should result in no duplicates
+
         for (int i = 0; i < words.size(); i++) { // loop through words
             frequency.add(0); // avoids index ut of bounds
+
             for (int j = 0; j < terms.size(); j++) { // loop through terms
                 if(words.get(i).equalsIgnoreCase(terms.get(j))){
                     frequency.set(i, frequency.get(i) + 1);
                 }// adds 1 if word in list
             }// end of terms for-loop
+
         }// end of words for-loop
+
         int max = -1; // max set to impossible number
         int maxIndex = 0;
+
         for(int i = 0; i < frequency.size(); i++) { // loop through frequency
             if(frequency.get(i) > max){
                 max = frequency.get(i);
                 maxIndex = i;
             }// returns maxIndex
         }// end of frequency for-loop
+
         popularWord = words.get(maxIndex);// gets word at max index
         return popularWord;
     }// end of mostPopularWord method
@@ -213,57 +224,92 @@ public class TwitterJ {
     public int getFrequencyMax()
     {
         ArrayList<String> words = new ArrayList<>();
-        ArrayList<Integer> frequency = new ArrayList<Integer>();
+        ArrayList<Integer> frequency = new ArrayList<>();
+
         for(int i = 0; i < terms.size(); i++) { // loop through terms
             while(!words.contains(terms.get(i).toLowerCase())) { // check if words list contains terms from terms list (caps are ignored)
                 words.add(terms.get(i).toLowerCase());
             }// end of conditional while
         }// end of terms for loop - should result in no duplicates
+
         for (int i = 0; i < words.size(); i++) { // loop through words
             frequency.add(0); // avoids index ut of bounds
+
             for (int j = 0; j < terms.size(); j++) { // loop through terms
                 if(words.get(i).equalsIgnoreCase(terms.get(j))){
                     frequency.set(i, frequency.get(i) + 1);
                 }// adds 1 if word in list
             }// end of terms for-loop
+
         }// end of words for-loop
+
         int max = -1; // max set to impossible number
         int maxIndex = 0;
+
         for(int i = 0; i < frequency.size(); i++) { // loop through frequency
             if(frequency.get(i) > max){
                 max = frequency.get(i);
                 maxIndex = i;
             }// returns maxIndex
         }// end of frequency for-loop
+
         frequencyMax = frequency.get(maxIndex);
         return frequencyMax;
     }// end of getFrequencyMax method
 
+    /*  Part 3 */
+    public void investigate ()
+    {
+        twitterDiscordFollow();
+        twitterDiscordShow();
+        twitterDiscordRemove();
+    }
+
     public void twitterDiscordFollow()
     {
-        api.addMessageCreateListener(follow -> { //
+        api.addMessageCreateListener(follow -> {
             String userMessage = follow.getMessageContent();
             String usersString = "";
+
             if (userMessage.substring(0,7).equals("!follow")) {
                 usersString = userMessage.substring(7);
             }
+
             usersString = usersString.replaceAll("[^A-Za-z0-9_,]", "");
             String[] users = usersString.split(",");
             ArrayList<String> cleanList = new ArrayList<>();
+
             for (int i = 0; i < users.length; i++) {
-                if(users[i].length() > 4 && users[i].length() < 15) {
+                if(users[i].length() > 0 && users[i].length() < 15) {
                     cleanList.add(users[i]);
                 }
             }
+
             try {
                 FileWriter fileWriter = new FileWriter("followersList.txt",true);
                 BufferedWriter writer = new BufferedWriter(fileWriter);
+
                 for(int i = 0; i < cleanList.size(); i++) {
-                    writer.write(users[i] + "\n");
+                    File file = new File("followersList.txt");
+                    Scanner fromFile = new Scanner(file);
+                    boolean contains = false;
+
+                    while (fromFile.hasNextLine()) {
+                        if(cleanList.get(i).equals(fromFile.nextLine())) {
+                            contains = true;
+                        }
+                    }
+
+                    if(contains) {
+                        follow.getChannel().sendMessage("Could not add " + cleanList.get(i) + "! \nThey are already in the list.");
+                    }else {
+                        writer.write(cleanList.get(i) + "\n");
+                        follow.getChannel().sendMessage("Added " + cleanList.get(i) + "!");
+                    }
                     writer.flush();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+
+            } catch (IOException e) {e.printStackTrace();
             }// try catch for writing into file
         });
     }
@@ -272,12 +318,13 @@ public class TwitterJ {
     {
         api.addMessageCreateListener(showFollowing -> {
             String userMessage = showFollowing.getMessageContent();
-            String usersString = "";
+
             if (userMessage.equals("!show")) {
                 try {
                     File file = new File("followersList.txt");
                     Scanner fromFile = new Scanner(file);
                     String output = "";
+
                     while (fromFile.hasNextLine()) { // while the next line is not empty
                         String currentUser = fromFile.nextLine();
                         output += currentUser;
@@ -285,38 +332,86 @@ public class TwitterJ {
                             output += ", ";
                         }
                     }// end of while-loop - finished reading text file
-                    showFollowing.getChannel().sendMessage("Showing tweets from " + output + "!");
+
+                    showFollowing.getChannel().sendMessage("Showing latest tweets & replies from " + output + "!");
                 }catch (FileNotFoundException e) {e.printStackTrace();}
+
                 ArrayList<String> users = new ArrayList<>();
                 ArrayList<Status> statusList = new ArrayList<>();
+
                 try {
                     File file = new File("followersList.txt");
                     Scanner fromFile = new Scanner(file);
+
                     while (fromFile.hasNextLine()) { // while the next line is not empty
                         users.add(fromFile.nextLine());
                     }// end of while-loop - finished reading text file
+
                     for (int i = 0; i < users.size(); i++) {
-                        PrintStream fileout = new PrintStream(new FileOutputStream("tweets.txt"));
                         Paging page = new Paging (1,1);
                         page.setPage(1);
                         statusList.addAll(twitter.getUserTimeline(users.get(i),page));
                     }
+
                     for (int i = 0; i < statusList.size(); i++) {
                         showFollowing.getChannel().sendMessage(statusList.get(i).getUser().getScreenName() + " said: " + statusList.get(i).getText());
                     }
+
                 }catch (FileNotFoundException | TwitterException e) {e.printStackTrace();}
             }
 
         });
     }
 
-    /*  Part 3 */
-    public void investigate ()
+    public void twitterDiscordRemove()
     {
+        api.addMessageCreateListener(remove -> {
+            String userMessage = remove.getMessageContent();
+            String usersString = "";
 
+            if (userMessage.substring(0,7).equals("!remove")) {
+                usersString = userMessage.substring(7);
+            }
 
-        twitterDiscordFollow();
-        twitterDiscordShow();
+            usersString = usersString.replaceAll("[^A-Za-z0-9_,]", "");
+            String[] removeUsers = usersString.split(",");
+            ArrayList<String> cleanList = new ArrayList<>();
+
+            for (int i = 0; i < removeUsers.length; i++) {
+                if(removeUsers[i].length() > 0 && removeUsers[i].length() < 15) {
+                    cleanList.add(removeUsers[i]);
+                }
+            }
+
+            try {
+                ArrayList<String> users = new ArrayList<>();
+                File file = new File("followersList.txt");
+                Scanner fromFile = new Scanner(file);
+
+                while (fromFile.hasNextLine()) { // while the next line is not empty
+                    users.add(fromFile.nextLine());
+                }// end of while-loop - finished reading text file
+
+                for (int i = 0; i < users.size(); i++) {
+                    for (int j = 0; j < cleanList.size(); j++) {
+                        if (users.get(i).equals(cleanList.get(j))) {
+                            users.remove(i);
+                            i--;
+                        }
+                    }
+                }
+
+                FileWriter fileWriter = new FileWriter("followersList.txt");
+                BufferedWriter writer = new BufferedWriter(fileWriter);
+
+                for(int i = 0; i < users.size(); i++) {
+                    writer.write(users.get(i) + "\n");
+                    writer.flush();
+                }
+
+            } catch (IOException e) {e.printStackTrace();
+            }// try catch for writing into file
+        });
     }
 
     /*
