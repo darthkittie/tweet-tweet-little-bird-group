@@ -13,7 +13,7 @@ public class TwitterJ {
     private List<String> terms;
     private String popularWord;
     private int frequencyMax;
-    private final DiscordApi api = new DiscordApiBuilder().setToken("OTc4NzcxMTU4NTk1OTYwODMy.GtyMO-.vmOsyEebmcz4d20bFvHlECV93ur2FI7KuH2vnw").login().join();
+    private final DiscordApi api = new DiscordApiBuilder().setToken("<TOKEN>").login().join();
 
 
     public TwitterJ(PrintStream console)
@@ -309,8 +309,7 @@ public class TwitterJ {
                     writer.flush();
                 }
 
-            } catch (IOException e) {e.printStackTrace();
-            }// try catch for writing into file
+            } catch (IOException e) {e.printStackTrace();}// try catch for writing into file
         });
     }
 
@@ -320,6 +319,7 @@ public class TwitterJ {
             String userMessage = showFollowing.getMessageContent();
 
             if (userMessage.equals("!show")) {
+
                 try {
                     File file = new File("followersList.txt");
                     Scanner fromFile = new Scanner(file);
@@ -384,6 +384,7 @@ public class TwitterJ {
             }
 
             try {
+
                 ArrayList<String> users = new ArrayList<>();
                 File file = new File("followersList.txt");
                 Scanner fromFile = new Scanner(file);
@@ -409,8 +410,7 @@ public class TwitterJ {
                     writer.flush();
                 }
 
-            } catch (IOException e) {e.printStackTrace();
-            }// try catch for writing into file
+            } catch (IOException e) {e.printStackTrace();}// try catch for writing into file
         });
     }
 
