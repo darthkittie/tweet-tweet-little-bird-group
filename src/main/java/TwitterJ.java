@@ -2,7 +2,6 @@ import org.javacord.api.*;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import twitter4j.*;
-
 import java.awt.*;
 import java.util.List;
 import java.io.*;
@@ -89,15 +88,15 @@ public class TwitterJ {
      */
     public void splitIntoWords()
     {
-        for (int i = 0; i < statuses.size(); i++) { // loop through statuses
+        for (int i = 0; i < statuses.size(); i++) {
             String[] split = statuses.get(i).getText().split(" ");
 
-            for (int j = 0; j < split.length; j++) { // through individual words in statuses
+            for (int j = 0; j < split.length; j++) {
                 String word = removePunctuation(split[j]); // need remove punctuation here, as not called in runner.
                 terms.add(word);
-            }// end of split for-loop
+            }
 
-        }// end of statuses for-loop
+        }
     }// end of splitIntoWords method
 
     /*
@@ -132,17 +131,17 @@ public class TwitterJ {
             File file = new File("commonWords.txt");
             Scanner fromFile = new Scanner(file);
 
-            while (fromFile.hasNextLine()) { // while the next line is not empty
+            while (fromFile.hasNextLine()) {
                 String currentCommonWord = fromFile.nextLine();
 
-                for (int i = 0; i < terms.size(); i++) { // loop through terms
+                for (int i = 0; i < terms.size(); i++) {
                     if (terms.get(i).equalsIgnoreCase(currentCommonWord)) {
                         terms.remove(i);
                         i--;
                     }// remove term if common word
-                }// end of terms for-loop
+                }
 
-            }// end of while-loop - finished reading text file
+            }// finished reading text file
 
         }catch (FileNotFoundException e) {e.printStackTrace();}
     }// end of removeCommonEnglishWords method
@@ -160,19 +159,19 @@ public class TwitterJ {
 
             for(int j = i + 1; j < terms.size(); j++) { // loop through terms
                 if (terms.get(j).compareToIgnoreCase(terms.get(minIndex)) < 0) minIndex = j;
-            }// end of terms for-loop
+            }
 
-            String temp = terms.get(i);
+            String temp = terms.get(i); // needed to swap location
             terms.set(i, terms.get(minIndex));
-            terms.set(minIndex, temp);
+            terms.set(minIndex, temp); // moves to proper index
         }// end of selection sort
 
-        for(int i = 0; i < terms.size()-1 ; i++) { // loop through terms
+        for(int i = 0; i < terms.size()-1 ; i++) {
             if(terms.get(i).equals("") || terms.get(i).equals(" ")){
                 terms.remove(i);
                 i--;
             }// remove if term is empty
-        }// end of terms for-loop
+        }
 
     }// end of sortAndRemoveEmpties method
 
@@ -188,32 +187,32 @@ public class TwitterJ {
         ArrayList<String> words = new ArrayList<>();
         ArrayList<Integer> frequency = new ArrayList<>();
 
-        for(int i = 0; i < terms.size(); i++) { // loop through terms
+        for(int i = 0; i < terms.size(); i++) {
             while(!words.contains(terms.get(i).toLowerCase())) { // check if words list contains terms from terms list (caps are ignored)
                 words.add(terms.get(i).toLowerCase());
             }// end of conditional while
-        }// end of terms for loop - should result in no duplicates
+        }// should result in no duplicates
 
-        for (int i = 0; i < words.size(); i++) { // loop through words
-            frequency.add(0); // avoids index ut of bounds
+        for (int i = 0; i < words.size(); i++) {
+            frequency.add(0); // avoids index out of bounds
 
-            for (int j = 0; j < terms.size(); j++) { // loop through terms
+            for (int j = 0; j < terms.size(); j++) {
                 if(words.get(i).equalsIgnoreCase(terms.get(j))){
                     frequency.set(i, frequency.get(i) + 1);
                 }// adds 1 if word in list
-            }// end of terms for-loop
+            }
 
-        }// end of words for-loop
+        }
 
         int max = -1; // max set to impossible number
         int maxIndex = 0;
 
-        for(int i = 0; i < frequency.size(); i++) { // loop through frequency
+        for(int i = 0; i < frequency.size(); i++) {
             if(frequency.get(i) > max){
                 max = frequency.get(i);
                 maxIndex = i;
             }// returns maxIndex
-        }// end of frequency for-loop
+        }
 
         popularWord = words.get(maxIndex);// gets word at max index
         return popularWord;
@@ -229,32 +228,32 @@ public class TwitterJ {
         ArrayList<String> words = new ArrayList<>();
         ArrayList<Integer> frequency = new ArrayList<>();
 
-        for(int i = 0; i < terms.size(); i++) { // loop through terms
+        for(int i = 0; i < terms.size(); i++) {
             while(!words.contains(terms.get(i).toLowerCase())) { // check if words list contains terms from terms list (caps are ignored)
                 words.add(terms.get(i).toLowerCase());
             }// end of conditional while
-        }// end of terms for loop - should result in no duplicates
+        }// should result in no duplicates
 
-        for (int i = 0; i < words.size(); i++) { // loop through words
+        for (int i = 0; i < words.size(); i++) {
             frequency.add(0); // avoids index ut of bounds
 
-            for (int j = 0; j < terms.size(); j++) { // loop through terms
+            for (int j = 0; j < terms.size(); j++) {
                 if(words.get(i).equalsIgnoreCase(terms.get(j))){
                     frequency.set(i, frequency.get(i) + 1);
                 }// adds 1 if word in list
-            }// end of terms for-loop
+            }
 
-        }// end of words for-loop
+        }
 
         int max = -1; // max set to impossible number
         int maxIndex = 0;
 
-        for(int i = 0; i < frequency.size(); i++) { // loop through frequency
+        for(int i = 0; i < frequency.size(); i++) {
             if(frequency.get(i) > max){
                 max = frequency.get(i);
                 maxIndex = i;
             }// returns maxIndex
-        }// end of frequency for-loop
+        }
 
         frequencyMax = frequency.get(maxIndex);
         return frequencyMax;
@@ -268,28 +267,28 @@ public class TwitterJ {
         twitterDiscordRemove();
     }
 
-    public void twitterDiscordFollow()
+    public void twitterDiscordFollow() // adds users to a file
     {
-        api.addMessageCreateListener(follow -> {
+        api.addMessageCreateListener(follow -> { // lambda expression (from javacord docs) that checks messages in discord channel
             String userMessage = follow.getMessageContent();
             String usersString = "";
 
-            if (userMessage.substring(0,7).equals("!follow")) {
-                usersString = userMessage.substring(7);
+            if (userMessage.substring(0,7).equals("!follow")) { // checks if user's message starts with "!follow"
+                usersString = userMessage.substring(7); // grabs everything that follows
             }
 
-            usersString = usersString.replaceAll("[^A-Za-z0-9_,]", "");
+            usersString = usersString.replaceAll("[^A-Za-z0-9_,]", ""); // removes all illegal characters and commas (to split)
             String[] users = usersString.split(",");
             ArrayList<String> cleanList = new ArrayList<>();
 
             for (int i = 0; i < users.length; i++) {
                 if(users[i].length() > 0 && users[i].length() < 15) {
                     cleanList.add(users[i]);
-                }
+                }// adds to new list if username length is correct
             }
 
             try {
-                FileWriter fileWriter = new FileWriter("followersList.txt",true);
+                FileWriter fileWriter = new FileWriter("followersList.txt",true); // append means that file won't be cleared
                 BufferedWriter writer = new BufferedWriter(fileWriter);
 
                 for(int i = 0; i < cleanList.size(); i++) {
@@ -301,18 +300,18 @@ public class TwitterJ {
                         if(cleanList.get(i).equals(fromFile.nextLine())) {
                             contains = true;
                         }
-                    }
+                    }// used with if-else that follows to make sure there are no duplicates
 
                     if(contains) {
                         follow.getChannel().sendMessage("Could not add " + cleanList.get(i) + "! \nThey are already in the list.");
                     }else {
                         writer.write(cleanList.get(i) + "\n");
                         follow.getChannel().sendMessage("Added " + cleanList.get(i) + "!");
-                    }
+                    }// checks if name is already in list
                     writer.flush();
-                }
+                }// end of clean list loop
 
-            } catch (IOException e) {e.printStackTrace();}// try catch for writing into file
+            } catch (IOException e) {e.printStackTrace();}
         });
     }
 
@@ -321,26 +320,28 @@ public class TwitterJ {
         api.addMessageCreateListener(showFollowing -> {
             String userMessage = showFollowing.getMessageContent();
 
-            if (userMessage.equals("!show")) {
+            if (userMessage.equals("!show")) { // checks if user inputs "!show"
 
                 try {
                     File file = new File("followersList.txt");
                     Scanner fromFile = new Scanner(file);
                     String output = "";
 
-                    while (fromFile.hasNextLine()) { // while the next line is not empty
+                    while (fromFile.hasNextLine()) {
                         String currentUser = fromFile.nextLine();
                         output += currentUser;
+
                         if(fromFile.hasNextLine()) {
                             output += ", ";
-                        }
+                        } // Use to create progress statement
+
                     }// end of while-loop - finished reading text file
 
                     if(!(output.equals("") || output.equals(" "))) {
-                        showFollowing.getChannel().sendMessage("Showing latest tweets/replies from " + output + "!");
+                        showFollowing.getChannel().sendMessage("Showing latest tweets/replies from " + output + "!"); // using listener to send a message in channel
                     }else {
                         showFollowing.getChannel().sendMessage("You are not following anyone yet :(");
-                    }
+                    }// only start showing messages if output is not empty
                 }catch (FileNotFoundException e) {e.printStackTrace();}
 
                 ArrayList<String> users = new ArrayList<>();
@@ -350,11 +351,12 @@ public class TwitterJ {
                     File file = new File("followersList.txt");
                     Scanner fromFile = new Scanner(file);
 
-                    while (fromFile.hasNextLine()) { // while the next line is not empty
+                    while (fromFile.hasNextLine()) {
                         users.add(fromFile.nextLine());
-                    }// end of while-loop - finished reading text file
+                    }// finished reading text file
 
                     for (int i = 0; i < users.size(); i++) {
+                        // this uses the file writing from part 2 - instead of pulling 200 pages, just 1
                         Paging page = new Paging (1,1);
                         page.setPage(1);
                         statusList.addAll(twitter.getUserTimeline(users.get(i),page));
@@ -362,6 +364,8 @@ public class TwitterJ {
 
                     for (int i = 0; i < statusList.size(); i++) {
                         /*---------------------------------------------------------------------------------------*/
+
+                        // print out the tweets using the message builder class of javacord - using documentation
                         new MessageBuilder()
                                 .setEmbed(new EmbedBuilder()
                                         .setTitle(statusList.get(i).getUser().getScreenName() + " said: ")
@@ -385,9 +389,9 @@ public class TwitterJ {
 
             if (userMessage.substring(0,7).equals("!remove")) {
                 usersString = userMessage.substring(7);
-            }
+            } // checks if user input begins with "!remove"
 
-            usersString = usersString.replaceAll("[^A-Za-z0-9_,]", "");
+            usersString = usersString.replaceAll("[^A-Za-z0-9_,]", ""); // removes all illegal characters and commas (to split)
             String[] removeUsers = usersString.split(",");
             ArrayList<String> cleanList = new ArrayList<>();
 
@@ -395,7 +399,7 @@ public class TwitterJ {
                 if(removeUsers[i].length() > 0 && removeUsers[i].length() < 15) {
                     cleanList.add(removeUsers[i]);
                 }
-            }
+            }// creates new array of users
 
             try {
 
@@ -407,21 +411,22 @@ public class TwitterJ {
                     users.add(fromFile.nextLine());
                 }// end of while-loop - finished reading text file
 
-                for (int i = 0; i < users.size(); i++) {
-                    for (int j = 0; j < cleanList.size(); j++) {
-                        if (users.get(i).equals(cleanList.get(j))) {
-                            users.remove(i);
-                            i--;
-                            remove.getChannel().sendMessage("Successfully removed " + users.get(i) + "!");
-                        }
+                for (int i = 0; i < cleanList.size(); i++) {
+                    for (int j = 0; j < users.size(); j++) {
+                        if (users.get(j).equals(cleanList.get(i))) {
+                            users.remove(j);
+                            j--;
+                            remove.getChannel().sendMessage("Successfully removed " + cleanList.get(i) + "!");
+
+                        }// remove if there is a match
                     }
                 }
 
-                FileWriter fileWriter = new FileWriter("followersList.txt");
+                FileWriter fileWriter = new FileWriter("followersList.txt"); // since no append - should result in brand-new file
                 BufferedWriter writer = new BufferedWriter(fileWriter);
 
                 for(int i = 0; i < users.size(); i++) {
-                    writer.write(users.get(i) + "\n");
+                    writer.write(users.get(i) + "\n"); // write each into file & include "\n"
                     writer.flush();
                 }
 

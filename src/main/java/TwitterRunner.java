@@ -20,7 +20,7 @@ public class TwitterRunner {
         //String message = "REPLACE THIS STRING WITH YOUR OWN MESSAGE";
         // tweety.tweetOut(message);
 
-        /*
+/*
         // PART 2
         // Choose a public Twitter user's handle
          Scanner scan = new Scanner(System.in);
@@ -37,7 +37,7 @@ public class TwitterRunner {
             consolePrint.print("Please enter a Twitter handle, do not include the @ symbol --> ");
             twitter_handle = scan.next();
          }
-        */
+*/
 
 
         // PART 3
