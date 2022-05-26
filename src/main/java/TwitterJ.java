@@ -313,7 +313,7 @@ public class TwitterJ {
 
             } catch (IOException e) {e.printStackTrace();}
         });
-    }
+    }// end of discord follow method
 
     public void twitterDiscordShow()
     {
@@ -379,7 +379,7 @@ public class TwitterJ {
             }
 
         });
-    }
+    }// end of discord show method
 
     public void twitterDiscordRemove()
     {
@@ -432,7 +432,7 @@ public class TwitterJ {
 
             } catch (IOException e) {e.printStackTrace();}// try catch for writing into file
         });
-    }
+    }// end of discord remove method
 
     /*
      * This method determines how many people near Churchill Downs
