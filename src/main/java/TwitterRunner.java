@@ -19,7 +19,6 @@ public class TwitterRunner {
         // Create and set a String called message here
         //String message = "REPLACE THIS STRING WITH YOUR OWN MESSAGE";
         // tweety.tweetOut(message);
-
 /*
         // PART 2
         // Choose a public Twitter user's handle
